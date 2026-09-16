@@ -16,9 +16,11 @@ export function createPlanet(record) {
     new THREE.MeshStandardMaterial({ color: record.color, roughness: 0.9 }),
   )
   mesh.scale.setScalar(sceneRadius)
+  mesh.userData.record = record
   anchor.add(mesh)
 
   const orbitLine = createOrbitLine(orbitRadius, record.color)
+  orbitLine.userData.record = record
 
   function update(simDays) {
     const { x, z } = orbitPosition({

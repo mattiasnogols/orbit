@@ -1,22 +1,14 @@
 import { DAYS_PER_SECOND } from '../config.js'
 
 const MIN_SPEED = 0.1
-const MAX_SPEED = 10
-const SLIDER_MAX = 1000
-const PRESETS = [0.1, 1, 10]
-
-function speedToSlider(speed) {
-  const t = Math.log(speed / MIN_SPEED) / Math.log(MAX_SPEED / MIN_SPEED)
-  return Math.round(t * SLIDER_MAX)
-}
-
-function sliderToSpeed(value) {
-  const t = value / SLIDER_MAX
-  return MIN_SPEED * Math.pow(MAX_SPEED / MIN_SPEED, t)
-}
+const MAX_SPEED = 10000
 
 function clampSpeed(speed) {
   return Math.min(Math.max(speed, MIN_SPEED), MAX_SPEED)
+}
+
+function formatSpeed(speed) {
+  return String(Number(speed.toFixed(2)))
 }
 
 function formatElapsed(days) {
@@ -35,12 +27,13 @@ export function createTimeControls(container, simTime) {
   slower.type = 'button'
   slower.textContent = '−'
 
-  const slider = document.createElement('input')
-  slider.type = 'range'
-  slider.min = '0'
-  slider.max = String(SLIDER_MAX)
-  slider.step = '1'
-  slider.setAttribute('aria-label', 'Simulation speed')
+  const speedInput = document.createElement('input')
+  speedInput.type = 'number'
+  speedInput.min = String(MIN_SPEED)
+  speedInput.max = String(MAX_SPEED)
+  speedInput.step = '0.1'
+  speedInput.value = formatSpeed(simTime.getSpeed())
+  speedInput.setAttribute('aria-label', 'Simulation speed multiplier')
 
   const faster = document.createElement('button')
   faster.type = 'button'
@@ -52,17 +45,6 @@ export function createTimeControls(container, simTime) {
 
   const readout = document.createElement('span')
   readout.className = 'time-readout'
-
-  const presetButtons = PRESETS.map((preset) => {
-    const button = document.createElement('button')
-    button.type = 'button'
-    button.textContent = `${preset}×`
-    button.addEventListener('click', () => {
-      simTime.setSpeed(preset)
-      sync()
-    })
-    return button
-  })
 
   playPause.addEventListener('click', () => {
     simTime.setPaused(!simTime.isPaused())
@@ -79,35 +61,44 @@ export function createTimeControls(container, simTime) {
     sync()
   })
 
-  slider.addEventListener('input', () => {
-    simTime.setSpeed(sliderToSpeed(Number(slider.value)))
-    updateReadout()
+  speedInput.addEventListener('input', () => {
+    const value = Number(speedInput.value)
+    if (Number.isFinite(value) && value > 0) {
+      simTime.setSpeed(value)
+      updateReadout()
+    }
+  })
+
+  speedInput.addEventListener('change', () => {
+    const value = Number(speedInput.value)
+    simTime.setSpeed(Number.isFinite(value) && value > 0 ? value : 1)
+    sync()
   })
 
   reset.addEventListener('click', () => simTime.reset())
 
-  root.append(playPause, slower, slider, faster, ...presetButtons, reset, readout)
+  root.append(playPause, slower, speedInput, faster, reset, readout)
   container.append(root)
 
   function updateReadout() {
     const speed = simTime.getSpeed()
     const rate = simTime.isPaused() ? 0 : DAYS_PER_SECOND * speed
-    readout.textContent = `${speed.toFixed(2)}× · ${rate.toFixed(2)} days/s · ${formatElapsed(simTime.getDays())}`
+    readout.textContent = `${formatSpeed(speed)}× · ${rate.toFixed(2)} days/s · ${formatElapsed(simTime.getDays())}`
   }
 
   function sync() {
     playPause.textContent = simTime.isPaused() ? 'Play' : 'Pause'
-    if (document.activeElement !== slider) {
-      slider.value = String(speedToSlider(simTime.getSpeed()))
+    if (document.activeElement !== speedInput) {
+      speedInput.value = formatSpeed(simTime.getSpeed())
     }
     updateReadout()
   }
 
   function update() {
     playPause.textContent = simTime.isPaused() ? 'Play' : 'Pause'
-    if (document.activeElement !== slider) {
-      const target = speedToSlider(simTime.getSpeed())
-      if (Number(slider.value) !== target) slider.value = String(target)
+    if (document.activeElement !== speedInput) {
+      const display = formatSpeed(simTime.getSpeed())
+      if (speedInput.value !== display) speedInput.value = display
     }
     updateReadout()
   }
