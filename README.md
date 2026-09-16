@@ -67,6 +67,7 @@ Design decisions:
 - Size and distance use separate sqrt mappings; monotonic, clamped low to avoid NaN for later CRUD.
 - The Sun uses a fixed radius outside the size mapping.
 - Point light at origin with `decay = 0` keeps distant planets lit; low ambient reveals night sides.
+- `buildSystem(scene, records)` derives the scene from the data records and is the only module that adds objects to it.
 
 Layout: centred top time bar; collapsible right-hand panel; bottom-left help legend; floating tooltip.
 Play/Pause (Space), speed down/up buttons

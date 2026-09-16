@@ -18,7 +18,7 @@ export function createScene() {
     0.1,
     2000,
   )
-  camera.position.set(0, 3, 8)
+  camera.position.set(0, 100, 200)
 
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
