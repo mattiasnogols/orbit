@@ -1,16 +1,11 @@
 import * as THREE from 'three'
+import { createScene } from './scene/setup.js'
 
-const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById('scene'),
-  antialias: true,
-})
-renderer.setSize(window.innerWidth, window.innerHeight)
+const { renderer, scene, camera, controls } = createScene()
 
-const scene = new THREE.Scene()
 scene.background = new THREE.Color(0x101820)
 
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
-
 renderer.setAnimationLoop(() => {
+  controls.update()
   renderer.render(scene, camera)
 })
