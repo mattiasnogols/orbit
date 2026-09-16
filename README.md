@@ -63,6 +63,11 @@ Guidelines:
 - Angular speed derives directly from the editable period, so changing "year length"
   changes motion immediately:
 
+Design decisions:
+- Size and distance use separate sqrt mappings; monotonic, clamped low to avoid NaN for later CRUD.
+- The Sun uses a fixed radius outside the size mapping.
+- Point light at origin with `decay = 0` keeps distant planets lit; low ambient reveals night sides.
+
 Layout: centred top time bar; collapsible right-hand panel; bottom-left help legend; floating tooltip.
 Play/Pause (Space), speed down/up buttons
 Tree of planets with nested moons; each row has focus, edit, delete;
