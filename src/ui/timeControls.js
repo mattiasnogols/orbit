@@ -104,6 +104,7 @@ export function createTimeControls(container, simTime) {
   }
 
   function update() {
+    playPause.textContent = simTime.isPaused() ? 'Play' : 'Pause'
     if (document.activeElement !== slider) {
       const target = speedToSlider(simTime.getSpeed())
       if (Number(slider.value) !== target) slider.value = String(target)
