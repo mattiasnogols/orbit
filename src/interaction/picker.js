@@ -4,6 +4,7 @@ const LINE_HIT_RADIUS = 0.6
 const BASE_LINE_OPACITY = 0.35
 const HOVER_LINE_OPACITY = 0.9
 const HOVER_EMISSIVE = 0x444444
+const HOVER_BASIC_COLOR = 0xffffff
 const CLICK_TOLERANCE = 5
 
 function sameEntry(a, b) {
@@ -29,6 +30,13 @@ export function createPicker({ camera, domElement, getPickables, onHover, onSele
       material.opacity = on ? HOVER_LINE_OPACITY : BASE_LINE_OPACITY
     } else if (material.emissive) {
       material.emissive.setHex(on ? HOVER_EMISSIVE : 0x000000)
+    } else if (material.color) {
+      if (on && entry.object.userData.baseColor === undefined) {
+        entry.object.userData.baseColor = material.color.getHex()
+      }
+      if (entry.object.userData.baseColor !== undefined) {
+        material.color.setHex(on ? HOVER_BASIC_COLOR : entry.object.userData.baseColor)
+      }
     }
   }
 
