@@ -2,11 +2,11 @@ import * as THREE from 'three'
 
 const SEGMENTS = 128
 
-export function createOrbitLine(radius, color = 0xffffff) {
+export function createOrbitLine(color = 0xffffff) {
   const points = []
   for (let i = 0; i < SEGMENTS; i += 1) {
     const angle = (i / SEGMENTS) * Math.PI * 2
-    points.push(new THREE.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius))
+    points.push(new THREE.Vector3(Math.cos(angle), 0, Math.sin(angle)))
   }
 
   const geometry = new THREE.BufferGeometry().setFromPoints(points)

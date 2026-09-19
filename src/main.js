@@ -23,10 +23,17 @@ const clock = new THREE.Clock()
 
 let system = buildSystem(scene, store.getBodies())
 
-store.subscribe(({ kind }) => {
-  if (kind !== 'add' && kind !== 'remove' && kind !== 'reset') return
-  system.dispose()
-  system = buildSystem(scene, store.getBodies())
+store.subscribe(({ kind, id }) => {
+  if (kind === 'add' || kind === 'remove' || kind === 'reset') {
+    system.dispose()
+    system = buildSystem(scene, store.getBodies())
+    tooltip.hide()
+    return
+  }
+  if (kind === 'update') {
+    system.refreshBody(id)
+    tooltip.refresh()
+  }
 })
 
 const picker = createPicker({
@@ -36,6 +43,10 @@ const picker = createPicker({
   onHover: (entry) => {
     if (entry) tooltip.show(entry.record)
     else tooltip.hide()
+  },
+  onSelect: (entry) => {
+    const record = entry?.record
+    store.select(record && record.type !== 'star' ? record.id : null)
   },
 })
 

@@ -4,25 +4,25 @@ import { orbitPosition } from '../sim/orbit.js'
 import { createOrbitLine } from './orbitLine.js'
 
 export function createPlanet(record) {
-  const sceneRadius = kmToScene(record.radiusKm)
-  const orbitRadius = auToScene(record.distanceAU)
-
   const anchor = new THREE.Object3D()
 
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 48, 32),
-    new THREE.MeshStandardMaterial({ color: record.color, roughness: 0.9 }),
-  )
-  mesh.scale.setScalar(sceneRadius)
+  const material = new THREE.MeshStandardMaterial({ color: record.color, roughness: 0.9 })
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), material)
   mesh.userData.record = record
   anchor.add(mesh)
 
-  const orbitLine = createOrbitLine(orbitRadius, record.color)
+  const orbitLine = createOrbitLine(record.color)
   orbitLine.userData.record = record
+
+  function refresh() {
+    mesh.scale.setScalar(kmToScene(record.radiusKm))
+    material.color.set(record.color)
+    orbitLine.scale.setScalar(auToScene(record.distanceAU))
+  }
 
   function update(simDays) {
     const { x, z } = orbitPosition({
-      radius: orbitRadius,
+      radius: auToScene(record.distanceAU),
       startAngle: record.startAngle,
       periodDays: record.periodDays,
       simDays,
@@ -30,5 +30,7 @@ export function createPlanet(record) {
     anchor.position.set(x, 0, z)
   }
 
-  return { anchor, mesh, orbitLine, radius: sceneRadius, update }
+  refresh()
+
+  return { anchor, mesh, orbitLine, refresh, update }
 }

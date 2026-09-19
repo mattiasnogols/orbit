@@ -1,3 +1,5 @@
+import { createBodyForm } from './bodyForm.js'
+
 const YEAR_DAYS = 365.26
 const NEW_PLANET_DISTANCE_AU = 2.2
 
@@ -54,7 +56,7 @@ function createRow(record, { onFocus, onDelete }) {
 
   actions.append(focus, remove)
   row.append(name, actions)
-  return row
+  return { row, name }
 }
 
 export function createPanel(container, store, { onFocus } = {}) {
@@ -86,6 +88,8 @@ export function createPanel(container, store, { onFocus } = {}) {
   const list = document.createElement('ul')
   list.className = 'body-list'
 
+  const form = createBodyForm(store)
+
   const actions = document.createElement('div')
   actions.className = 'panel-actions'
 
@@ -99,30 +103,74 @@ export function createPanel(container, store, { onFocus } = {}) {
   restore.textContent = 'Restore defaults'
   restore.addEventListener('click', () => store.reset())
 
+  const rowsById = new Map()
+
   function renderList() {
+    rowsById.clear()
     const planets = store
       .getBodies()
       .filter((record) => record.type === 'planet')
       .sort((a, b) => a.distanceAU - b.distanceAU)
+
     list.replaceChildren(
-      ...planets.map((record) =>
-        createRow(record, {
+      ...planets.map((record) => {
+        const { row, name } = createRow(record, {
           onFocus,
           onDelete: (id) => store.remove(id),
-        }),
-      ),
+        })
+        row.addEventListener('click', (event) => {
+          if (event.target.closest('button')) return
+          store.select(record.id)
+        })
+        rowsById.set(record.id, { row, name })
+        return row
+      }),
     )
   }
 
-  store.subscribe(({ kind }) => {
-    if (kind === 'add' || kind === 'remove' || kind === 'reset') renderList()
+  function applySelection() {
+    const selectedId = store.getSelection()
+    for (const [id, entry] of rowsById) {
+      entry.row.classList.toggle('selected', id === selectedId)
+    }
+
+    const record = selectedId ? store.get(selectedId) : null
+    if (!record) {
+      form.hide()
+      return
+    }
+
+    form.show(record)
+    rowsById.get(selectedId)?.row.scrollIntoView({ block: 'nearest' })
+  }
+
+  store.subscribe(({ kind, id }) => {
+    if (kind === 'add' || kind === 'remove' || kind === 'reset') {
+      renderList()
+      applySelection()
+      return
+    }
+
+    if (kind === 'update') {
+      const entry = rowsById.get(id)
+      const record = store.get(id)
+      if (entry && record) {
+        entry.name.textContent = record.name
+        entry.name.title = record.name
+      }
+      if (id === store.getSelection() && record) form.show(record)
+      return
+    }
+
+    if (kind === 'select') applySelection()
   })
 
   header.append(title, toggle)
   actions.append(add, restore)
-  body.append(list, actions)
+  body.append(list, form.element, actions)
   root.append(header, body)
   container.append(root)
 
   renderList()
+  applySelection()
 }

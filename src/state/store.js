@@ -8,6 +8,7 @@ export function createStore(initialRecords = defaultRecords()) {
   const seed = initialRecords.map((record) => ({ ...record }))
   const bodies = new Map()
   const listeners = new Set()
+  let selectedId = null
 
   function load(records) {
     bodies.clear()
@@ -48,10 +49,21 @@ export function createStore(initialRecords = defaultRecords()) {
     },
     remove(id) {
       if (!bodies.delete(id)) return
+      if (selectedId === id) selectedId = null
       emit('remove', id)
+    },
+    select(id) {
+      if (id === selectedId) return
+      if (id !== null && !bodies.has(id)) return
+      selectedId = id
+      emit('select', id)
+    },
+    getSelection() {
+      return selectedId
     },
     reset() {
       load(seed)
+      if (selectedId !== null && !bodies.has(selectedId)) selectedId = null
       emit('reset')
     },
     subscribe(listener) {

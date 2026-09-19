@@ -1,15 +1,11 @@
+import { formatAu, formatKm } from './format.js'
+
 const OFFSET = 14
 const MARGIN = 8
-const KM_PER_AU = 149597870.7
-
-function formatKm(km) {
-  if (km >= 1000000) return `${(km / 1000000).toFixed(1)} million km`
-  return `${Math.round(km).toLocaleString('en-US')} km`
-}
 
 function formatDistance(record) {
   if (record.type === 'moon') return formatKm(record.distanceKm)
-  return `${record.distanceAU} AU · ${formatKm(record.distanceAU * KM_PER_AU)}`
+  return formatAu(record.distanceAU)
 }
 
 function makeRow(label, value) {
@@ -71,6 +67,11 @@ export function createTooltip(element) {
       current = record
       render(record)
       element.hidden = false
+      place()
+    },
+    refresh() {
+      if (!current) return
+      render(current)
       place()
     },
     hide() {
