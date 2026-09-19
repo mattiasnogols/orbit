@@ -2,32 +2,35 @@ import * as THREE from 'three'
 import { createScene } from './scene/setup.js'
 import { addLighting } from './scene/lighting.js'
 import { buildSystem } from './scene/sync.js'
+import { createStore } from './state/store.js'
 import { createSimTime } from './sim/time.js'
 import { createTimeControls } from './ui/timeControls.js'
 import { createTooltip } from './ui/tooltip.js'
 import { createPicker } from './interaction/picker.js'
-import { SUN, PLANETS } from './data/defaults.js'
 
 const { renderer, scene, camera, controls } = createScene()
 addLighting(scene)
 
 scene.background = new THREE.Color(0x101820)
 
-const system = buildSystem(scene, [SUN, ...PLANETS])
+const store = createStore()
 const simTime = createSimTime()
 const timeControls = createTimeControls(document.getElementById('ui'), simTime)
 const tooltip = createTooltip(document.getElementById('tooltip'))
 const clock = new THREE.Clock()
 
-const pickables = [
-  system.sun,
-  ...system.planets.flatMap((planet) => [planet.mesh, planet.orbitLine]),
-]
+let system = buildSystem(scene, store.getBodies())
+
+store.subscribe(({ kind }) => {
+  if (kind !== 'add' && kind !== 'remove' && kind !== 'reset') return
+  system.dispose()
+  system = buildSystem(scene, store.getBodies())
+})
 
 const picker = createPicker({
   camera,
   domElement: renderer.domElement,
-  getPickables: () => pickables,
+  getPickables: () => system.getPickables(),
   onHover: (entry) => {
     if (entry) tooltip.show(entry.record)
     else tooltip.hide()

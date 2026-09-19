@@ -21,7 +21,22 @@ export function buildSystem(scene, records) {
     }
   }
 
+  function getPickables() {
+    return [sun, ...planets.flatMap((planet) => [planet.mesh, planet.orbitLine])]
+  }
+
+  function dispose() {
+    const objects = [sun, ...planets.flatMap((planet) => [planet.anchor, planet.orbitLine])]
+    for (const object of objects) {
+      scene.remove(object)
+      object.traverse((child) => {
+        if (child.geometry) child.geometry.dispose()
+        if (child.material) child.material.dispose()
+      })
+    }
+  }
+
   update(0)
 
-  return { sun, planets, update }
+  return { sun, planets, update, getPickables, dispose }
 }
