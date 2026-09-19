@@ -14,6 +14,14 @@ export const SIZE_SCALE = {
   pow: 0.5,
 }
 
+export const MOON_DISTANCE_SCALE = {
+  minKm: 10000,
+  maxKm: 2000000,
+  outMin: 0.5,
+  outMax: 5,
+  pow: 0.5,
+}
+
 export const SUN_RADIUS = 5
 
 export const DAYS_PER_SECOND = 2

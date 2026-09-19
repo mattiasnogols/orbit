@@ -28,9 +28,34 @@ function newPlanetRecord(bodies) {
   }
 }
 
-function createRow(record, { onFocus, onDelete }) {
+function nextMoonIndex(bodies) {
+  let index = 1
+  while (bodies.some((body) => body.id === `moon-${index}`)) index += 1
+  return index
+}
+
+function newMoonRecord(parent, bodies) {
+  const index = nextMoonIndex(bodies)
+  return {
+    id: `moon-${index}`,
+    type: 'moon',
+    parentId: parent.id,
+    name: `New moon ${index}`,
+    radiusKm: 1000,
+    distanceKm: 300000,
+    periodDays: 30,
+    rotationHours: 24,
+    axialTiltDeg: 0,
+    color: '#c9c9c9',
+    texture: null,
+    ringTexture: null,
+    startAngle: 0,
+  }
+}
+
+function createRow(record, { onFocus, onDelete, onAddMoon }) {
   const row = document.createElement('li')
-  row.className = 'body-row'
+  row.className = record.type === 'moon' ? 'body-row moon' : 'body-row'
 
   const name = document.createElement('span')
   name.className = 'body-name'
@@ -46,6 +71,17 @@ function createRow(record, { onFocus, onDelete }) {
   focus.textContent = 'Focus'
   focus.addEventListener('click', () => onFocus?.(record.id))
 
+  actions.append(focus)
+
+  if (onAddMoon) {
+    const addMoon = document.createElement('button')
+    addMoon.type = 'button'
+    addMoon.className = 'body-action'
+    addMoon.textContent = '+ Moon'
+    addMoon.addEventListener('click', () => onAddMoon(record))
+    actions.append(addMoon)
+  }
+
   const remove = document.createElement('button')
   remove.type = 'button'
   remove.className = 'body-action danger'
@@ -54,7 +90,7 @@ function createRow(record, { onFocus, onDelete }) {
     if (window.confirm(`Delete ${record.name}?`)) onDelete?.(record.id)
   })
 
-  actions.append(focus, remove)
+  actions.append(remove)
   row.append(name, actions)
   return { row, name }
 }
@@ -107,25 +143,47 @@ export function createPanel(container, store, { onFocus } = {}) {
 
   function renderList() {
     rowsById.clear()
-    const planets = store
-      .getBodies()
+    const records = store.getBodies()
+    const planets = records
       .filter((record) => record.type === 'planet')
       .sort((a, b) => a.distanceAU - b.distanceAU)
 
-    list.replaceChildren(
-      ...planets.map((record) => {
-        const { row, name } = createRow(record, {
+    const moonsByParent = new Map()
+    for (const moon of records.filter((record) => record.type === 'moon')) {
+      const siblings = moonsByParent.get(moon.parentId) ?? []
+      siblings.push(moon)
+      moonsByParent.set(moon.parentId, siblings)
+    }
+
+    const rows = []
+    for (const planet of planets) {
+      const moons = (moonsByParent.get(planet.id) ?? []).sort(
+        (a, b) => a.distanceKm - b.distanceKm,
+      )
+      const entries = [
+        {
+          record: planet,
+          onAddMoon: (parent) => store.add(newMoonRecord(parent, store.getBodies())),
+        },
+        ...moons.map((moon) => ({ record: moon })),
+      ]
+
+      for (const entry of entries) {
+        const { row, name } = createRow(entry.record, {
           onFocus,
           onDelete: (id) => store.remove(id),
+          onAddMoon: entry.onAddMoon,
         })
         row.addEventListener('click', (event) => {
           if (event.target.closest('button')) return
-          store.select(record.id)
+          store.select(entry.record.id)
         })
-        rowsById.set(record.id, { row, name })
-        return row
-      }),
-    )
+        rowsById.set(entry.record.id, { row, name })
+        rows.push(row)
+      }
+    }
+
+    list.replaceChildren(...rows)
   }
 
   function applySelection() {

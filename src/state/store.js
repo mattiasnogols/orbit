@@ -1,7 +1,7 @@
-import { SUN, PLANETS } from '../data/defaults.js'
+import { MOONS, PLANETS, SUN } from '../data/defaults.js'
 
 function defaultRecords() {
-  return [SUN, ...PLANETS].map((record) => ({ ...record }))
+  return [SUN, ...PLANETS, ...MOONS].map((record) => ({ ...record }))
 }
 
 export function createStore(initialRecords = defaultRecords()) {
@@ -48,8 +48,13 @@ export function createStore(initialRecords = defaultRecords()) {
       emit('update', id)
     },
     remove(id) {
-      if (!bodies.delete(id)) return
-      if (selectedId === id) selectedId = null
+      if (!bodies.has(id)) return
+      const removedIds = new Set([id])
+      for (const body of bodies.values()) {
+        if (body.parentId === id) removedIds.add(body.id)
+      }
+      for (const removedId of removedIds) bodies.delete(removedId)
+      if (selectedId !== null && removedIds.has(selectedId)) selectedId = null
       emit('remove', id)
     },
     select(id) {

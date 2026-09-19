@@ -1,9 +1,9 @@
 import * as THREE from 'three'
-import { auToScene, kmToScene } from '../sim/scaling.js'
+import { auToScene, kmToScene, moonDistanceToScene } from '../sim/scaling.js'
 import { orbitPosition } from '../sim/orbit.js'
 import { createOrbitLine } from './orbitLine.js'
 
-export function createPlanet(record) {
+export function createOrbitingBody(record, { parentRadius = () => 0 } = {}) {
   const anchor = new THREE.Object3D()
 
   const material = new THREE.MeshStandardMaterial({ color: record.color, roughness: 0.9 })
@@ -14,15 +14,22 @@ export function createPlanet(record) {
   const orbitLine = createOrbitLine(record.color)
   orbitLine.userData.record = record
 
+  function orbitRadius() {
+    if (record.type === 'moon') {
+      return parentRadius() + moonDistanceToScene(record.distanceKm)
+    }
+    return auToScene(record.distanceAU)
+  }
+
   function refresh() {
     mesh.scale.setScalar(kmToScene(record.radiusKm))
     material.color.set(record.color)
-    orbitLine.scale.setScalar(auToScene(record.distanceAU))
+    orbitLine.scale.setScalar(orbitRadius())
   }
 
   function update(simDays) {
     const { x, z } = orbitPosition({
-      radius: auToScene(record.distanceAU),
+      radius: orbitRadius(),
       startAngle: record.startAngle,
       periodDays: record.periodDays,
       simDays,

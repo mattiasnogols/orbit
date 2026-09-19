@@ -207,6 +207,16 @@ input[type="range"] {
   font-weight: 600;
 }
 
+.body-row.moon {
+  padding-left: 22px;
+}
+
+.body-row.moon::before {
+  content: "↳";
+  font-size: 11px;
+  color: var(--muted);
+}
+
 .body-name {
   flex: 1;
   min-width: 0;

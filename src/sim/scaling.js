@@ -1,4 +1,4 @@
-import { DISTANCE_SCALE, SIZE_SCALE } from '../config.js'
+import { DISTANCE_SCALE, MOON_DISTANCE_SCALE, SIZE_SCALE } from '../config.js'
 
 export function mapRange(value, inMin, inMax, outMin, outMax, pow = 1) {
   const t = Math.max((value - inMin) / (inMax - inMin), 0)
@@ -24,5 +24,16 @@ export function kmToScene(km) {
     SIZE_SCALE.outMin,
     SIZE_SCALE.outMax,
     SIZE_SCALE.pow,
+  )
+}
+
+export function moonDistanceToScene(km) {
+  return mapRange(
+    km,
+    MOON_DISTANCE_SCALE.minKm,
+    MOON_DISTANCE_SCALE.maxKm,
+    MOON_DISTANCE_SCALE.outMin,
+    MOON_DISTANCE_SCALE.outMax,
+    MOON_DISTANCE_SCALE.pow,
   )
 }
