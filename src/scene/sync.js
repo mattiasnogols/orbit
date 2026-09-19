@@ -1,10 +1,13 @@
 import { createSun } from '../bodies/Sun.js'
 import { createPlanet } from '../bodies/Planet.js'
+import { SUN_RADIUS } from '../config.js'
 
 export function buildSystem(scene, records) {
   const sunRecord = records.find((record) => record.type === 'star')
   const sun = createSun(sunRecord)
   scene.add(sun)
+
+  const bodiesById = new Map([[sunRecord.id, { anchor: sun, radius: SUN_RADIUS }]])
 
   const planets = records
     .filter((record) => record.type === 'planet')
@@ -12,8 +15,13 @@ export function buildSystem(scene, records) {
       const planet = createPlanet(record)
       scene.add(planet.anchor)
       scene.add(planet.orbitLine)
+      bodiesById.set(record.id, { anchor: planet.anchor, radius: planet.radius })
       return planet
     })
+
+  function getBody(id) {
+    return bodiesById.get(id) ?? null
+  }
 
   function update(simDays) {
     for (const planet of planets) {
@@ -38,5 +46,5 @@ export function buildSystem(scene, records) {
 
   update(0)
 
-  return { sun, planets, update, getPickables, dispose }
+  return { sun, planets, update, getPickables, getBody, dispose }
 }

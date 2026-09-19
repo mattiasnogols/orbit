@@ -123,3 +123,110 @@ input[type="range"] {
   font-size: 13px;
   color: var(--muted);
 }
+
+.panel {
+  position: absolute;
+  top: 72px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  backdrop-filter: blur(6px);
+  overflow: hidden;
+}
+
+.panel.collapsed {
+  bottom: auto;
+  width: auto;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.panel-toggle {
+  padding: 2px 9px;
+}
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  min-height: 0;
+  padding: 8px;
+}
+
+.panel.collapsed .panel-body {
+  display: none;
+}
+
+.body-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.body-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 8px;
+}
+
+.body-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.body-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.body-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.body-action {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.body-action.danger:hover {
+  border-color: #ff6b6b;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.panel-actions button {
+  flex: 1;
+  font-size: 12px;
+}

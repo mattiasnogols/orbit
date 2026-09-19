@@ -30,5 +30,5 @@ export function createPlanet(record) {
     anchor.position.set(x, 0, z)
   }
 
-  return { anchor, mesh, orbitLine, update }
+  return { anchor, mesh, orbitLine, radius: sceneRadius, update }
 }
