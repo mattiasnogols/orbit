@@ -1,6 +1,6 @@
 import { MOONS, PLANETS, SUN } from '../data/defaults.js'
 
-function defaultRecords() {
+export function defaultRecords() {
   return [SUN, ...PLANETS, ...MOONS].map((record) => ({ ...record }))
 }
 

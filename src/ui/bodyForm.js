@@ -1,10 +1,8 @@
-import { formatAuShort, formatKm, formatPeriod } from './format.js'
-
 const SLIDER_STEPS = 1000
-const SIZE = { min: 500, max: 150000, log: true }
-const PLANET_DISTANCE = { min: 0.2, max: 35, log: true }
-const MOON_DISTANCE = { min: 10000, max: 2000000, log: true }
-const PERIOD = { min: 10, max: 100000, log: true }
+const SIZE = { min: 500, max: 150000, step: 10, unit: 'km', log: true }
+const PLANET_DISTANCE = { min: 0.2, max: 35, step: 0.001, unit: 'AU', log: true }
+const MOON_DISTANCE = { min: 10000, max: 2000000, step: 100, unit: 'km', log: true }
+const PERIOD = { min: 10, max: 100000, step: 1, unit: 'days', log: true }
 
 function distanceConfig(record) {
   return record.type === 'moon' ? MOON_DISTANCE : PLANET_DISTANCE
@@ -23,7 +21,12 @@ function fromSlider(position, { min, max, log }) {
   return log ? min * Math.pow(max / min, t) : min + t * (max - min)
 }
 
-function createSliderField(label) {
+function snap(value, { min, max, step }) {
+  const clamped = Math.min(Math.max(value, min), max)
+  return Number((Math.round(clamped / step) * step).toFixed(6))
+}
+
+function createSliderField(label, config) {
   const wrapper = document.createElement('label')
   wrapper.className = 'field'
 
@@ -33,18 +36,31 @@ function createSliderField(label) {
   const title = document.createElement('span')
   title.textContent = label
 
-  const value = document.createElement('span')
-  value.className = 'field-value'
+  const entry = document.createElement('span')
+  entry.className = 'field-entry'
+
+  const input = document.createElement('input')
+  input.type = 'number'
+  input.min = String(config.min)
+  input.max = String(config.max)
+  input.step = String(config.step)
+  input.setAttribute('aria-label', label)
+
+  const unit = document.createElement('span')
+  unit.className = 'field-unit'
+  unit.textContent = config.unit
 
   const slider = document.createElement('input')
   slider.type = 'range'
   slider.min = '0'
   slider.max = String(SLIDER_STEPS)
   slider.step = '1'
+  slider.setAttribute('aria-label', `${label} slider`)
 
-  head.append(title, value)
+  entry.append(input, unit)
+  head.append(title, entry)
   wrapper.append(head, slider)
-  return { wrapper, title, slider, value }
+  return { wrapper, title, slider, input, unit, config }
 }
 
 export function createBodyForm(store) {
@@ -81,13 +97,40 @@ export function createBodyForm(store) {
   row.className = 'field-row'
   row.append(nameField, colorField)
 
-  const size = createSliderField('Diameter')
-  const distance = createSliderField('Distance from Sun')
-  const period = createSliderField('Year length')
+  const size = createSliderField('Diameter', SIZE)
+  const distance = createSliderField('Distance from Sun', PLANET_DISTANCE)
+  const period = createSliderField('Year length', PERIOD)
+
+  function currentRecord() {
+    const id = store.getSelection()
+    return id ? store.get(id) : null
+  }
 
   function commit(changes) {
     const id = store.getSelection()
     if (id) store.update(id, changes)
+  }
+
+  function bind(field, commitValue) {
+    field.slider.addEventListener('input', () => {
+      const value = snap(fromSlider(Number(field.slider.value), field.config), field.config)
+      field.input.value = String(value)
+      commitValue(value)
+    })
+
+    field.input.addEventListener('input', () => {
+      const value = Number(field.input.value)
+      if (!Number.isFinite(value)) return
+      field.slider.value = String(toSlider(value, field.config))
+      commitValue(value)
+    })
+
+    field.input.addEventListener('change', () => {
+      const value = snap(Number(field.input.value) || field.config.min, field.config)
+      field.input.value = String(value)
+      field.slider.value = String(toSlider(value, field.config))
+      commitValue(value)
+    })
   }
 
   name.addEventListener('input', () => commit({ name: name.value }))
@@ -100,62 +143,41 @@ export function createBodyForm(store) {
 
   color.addEventListener('input', () => commit({ color: color.value, texture: null }))
 
-  size.slider.addEventListener('input', () => {
-    const diameter = Math.round(fromSlider(Number(size.slider.value), SIZE) / 10) * 10
-    size.value.textContent = formatKm(diameter)
-    commit({ radiusKm: diameter / 2 })
-  })
-
-  distance.slider.addEventListener('input', () => {
-    const id = store.getSelection()
-    const record = id ? store.get(id) : null
+  bind(size, (diameter) => commit({ radiusKm: diameter / 2 }))
+  bind(distance, (value) => {
+    const record = currentRecord()
     if (!record) return
-    const raw = fromSlider(Number(distance.slider.value), distanceConfig(record))
-    if (record.type === 'moon') {
-      const km = Math.round(raw / 100) * 100
-      distance.value.textContent = formatKm(km)
-      store.update(id, { distanceKm: km })
-    } else {
-      const au = Number(raw.toFixed(3))
-      distance.value.textContent = formatAuShort(au)
-      store.update(id, { distanceAU: au })
-    }
+    commit(record.type === 'moon' ? { distanceKm: value } : { distanceAU: value })
   })
-
-  period.slider.addEventListener('input', () => {
-    const days = Math.round(fromSlider(Number(period.slider.value), PERIOD))
-    period.value.textContent = formatPeriod(days)
-    commit({ periodDays: days })
-  })
+  bind(period, (days) => commit({ periodDays: days }))
 
   element.append(heading, row, size.wrapper, distance.wrapper, period.wrapper)
+
+  function setField(field, value) {
+    if (document.activeElement !== field.slider) {
+      field.slider.value = String(toSlider(value, field.config))
+    }
+    if (document.activeElement !== field.input) {
+      field.input.value = String(Number(value.toFixed(6)))
+    }
+  }
 
   function show(record) {
     element.hidden = false
     heading.textContent = `Edit ${record.name}`
 
     const isMoon = record.type === 'moon'
-    const config = distanceConfig(record)
+    distance.config = distanceConfig(record)
+    distance.unit.textContent = distance.config.unit
     distance.title.textContent = isMoon ? 'Distance from planet' : 'Distance from Sun'
     period.title.textContent = isMoon ? 'Orbit period' : 'Year length'
 
     if (document.activeElement !== name) name.value = record.name
     if (document.activeElement !== color) color.value = record.color
 
-    if (document.activeElement !== size.slider) {
-      const diameter = record.radiusKm * 2
-      size.slider.value = String(toSlider(diameter, SIZE))
-      size.value.textContent = formatKm(diameter)
-    }
-    if (document.activeElement !== distance.slider) {
-      const value = isMoon ? record.distanceKm : record.distanceAU
-      distance.slider.value = String(toSlider(value, config))
-      distance.value.textContent = isMoon ? formatKm(value) : formatAuShort(value)
-    }
-    if (document.activeElement !== period.slider) {
-      period.slider.value = String(toSlider(record.periodDays, PERIOD))
-      period.value.textContent = formatPeriod(record.periodDays)
-    }
+    setField(size, record.radiusKm * 2)
+    setField(distance, isMoon ? record.distanceKm : record.distanceAU)
+    setField(period, record.periodDays)
   }
 
   function hide() {

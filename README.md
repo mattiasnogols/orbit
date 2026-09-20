@@ -61,3 +61,8 @@ Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0
 ## Performance target
 
 60 fps with the 8 planets + default moons.
+
+## Feature flags
+
+- `?stats` - show the `stats.js` FPS panel
+- `?bodies=N` - add N stress planets with moons for performance testing

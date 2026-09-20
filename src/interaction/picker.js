@@ -66,8 +66,9 @@ export function createPicker({ camera, domElement, getPickables, onHover, onSele
     pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
   }
 
-  function onPointerEnter() {
+  function onPointerEnter(event) {
     pointerInside = true
+    updatePointer(event)
   }
 
   function onPointerLeave() {

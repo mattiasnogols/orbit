@@ -1,25 +1,42 @@
 import * as THREE from 'three'
+import Stats from 'stats.js'
 import { createScene } from './scene/setup.js'
 import { addLighting } from './scene/lighting.js'
 import { buildSystem } from './scene/sync.js'
-import { createStore } from './state/store.js'
+import { createStore, defaultRecords } from './state/store.js'
+import { createStressRecords } from './data/stress.js'
 import { createSimTime } from './sim/time.js'
 import { createTimeControls } from './ui/timeControls.js'
 import { createTooltip } from './ui/tooltip.js'
 import { createPanel } from './ui/panel.js'
+import { createHelp } from './ui/help.js'
 import { createPicker } from './interaction/picker.js'
 import { createFocus } from './interaction/focus.js'
+
+const params = new URLSearchParams(window.location.search)
+const records = defaultRecords()
+const stressCount = Number(params.get('bodies') ?? 0)
+if (Number.isFinite(stressCount) && stressCount > 0) {
+  records.push(...createStressRecords(Math.min(stressCount, 1000)))
+}
 
 const { renderer, scene, camera, controls } = createScene()
 addLighting(scene)
 
 scene.background = new THREE.Color(0x101820)
 
-const store = createStore()
+const stats = params.has('stats') ? new Stats() : null
+if (stats) {
+  stats.showPanel(0)
+  document.body.append(stats.dom)
+}
+
+const store = createStore(records)
 const simTime = createSimTime()
 const timeControls = createTimeControls(document.getElementById('ui'), simTime)
 const tooltip = createTooltip(document.getElementById('tooltip'))
-const clock = new THREE.Clock()
+const timer = new THREE.Timer()
+timer.connect(document)
 
 let system = buildSystem(scene, store.getBodies())
 
@@ -60,6 +77,8 @@ createPanel(document.getElementById('ui'), store, {
   onFocus: (id) => focus.focus(id),
 })
 
+createHelp(document.getElementById('ui'))
+
 window.addEventListener('keydown', (event) => {
   if (event.code !== 'Space') return
   if (['INPUT', 'BUTTON', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return
@@ -67,12 +86,15 @@ window.addEventListener('keydown', (event) => {
   simTime.setPaused(!simTime.isPaused())
 })
 
-renderer.setAnimationLoop(() => {
-  simTime.advance(clock.getDelta())
+renderer.setAnimationLoop((timestamp) => {
+  stats?.begin()
+  timer.update(timestamp)
+  simTime.advance(timer.getDelta())
   system.update(simTime.getDays())
   focus.update()
   timeControls.update()
   controls.update()
   picker.update()
   renderer.render(scene, camera)
+  stats?.end()
 })

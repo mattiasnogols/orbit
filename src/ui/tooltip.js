@@ -34,6 +34,12 @@ export function createTooltip(element) {
     if (current) place()
   })
 
+  window.addEventListener('pointerover', (event) => {
+    pointerX = event.clientX
+    pointerY = event.clientY
+    if (current) place()
+  })
+
   function place() {
     const { width, height } = element.getBoundingClientRect()
     let left = pointerX + OFFSET

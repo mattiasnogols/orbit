@@ -66,12 +66,14 @@ export function buildSystem(scene, records) {
     for (const moon of moons) moon.update(simDays)
   }
 
+  const pickables = [
+    sun,
+    ...planets.flatMap((planet) => [planet.mesh, planet.orbitLine]),
+    ...moons.flatMap((moon) => [moon.mesh, moon.orbitLine]),
+  ]
+
   function getPickables() {
-    return [
-      sun,
-      ...planets.flatMap((planet) => [planet.mesh, planet.orbitLine]),
-      ...moons.flatMap((moon) => [moon.mesh, moon.orbitLine]),
-    ]
+    return pickables
   }
 
   function dispose() {
