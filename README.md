@@ -42,7 +42,7 @@ Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0
 ## Scaling & orbit rules
 
 - Compress distances more than sizes so planets are not crowded near the Sun.
-- Add a toggle: linear mode + huge scene for users who want true ratios.
+- "Realistic scale" toggle: linear mappings and a much larger scene for true relative ratios.
 - Default: circular orbits, planets on the XZ plane, counter-clockwise.
 - Angular speed derives directly from the editable period, so changing "year length"
   changes motion immediately.
@@ -56,7 +56,7 @@ Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0
 ## UI layout
 
 - Centred top time bar: Play/Pause, speed down/up buttons.
-- Right-hand panel: tree of planets with moons; CRUD
+- Right-hand panel: tree of planets with moons; CRUD; "Realistic scale" toggle.
 
 ## Performance target
 
@@ -66,3 +66,4 @@ Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0
 
 - `?stats` - show the `stats.js` FPS panel
 - `?bodies=N` - add N stress planets with moons for performance testing
+- `?realism` - start with the realistic scale toggle enabled

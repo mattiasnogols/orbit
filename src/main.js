@@ -5,6 +5,7 @@ import { addLighting } from './scene/lighting.js'
 import { buildSystem } from './scene/sync.js'
 import { createStore, defaultRecords } from './state/store.js'
 import { createStressRecords } from './data/stress.js'
+import { setScaleMode } from './sim/scaling.js'
 import { createSimTime } from './sim/time.js'
 import { createTimeControls } from './ui/timeControls.js'
 import { createTooltip } from './ui/tooltip.js'
@@ -14,6 +15,8 @@ import { createPicker } from './interaction/picker.js'
 import { createFocus } from './interaction/focus.js'
 
 const params = new URLSearchParams(window.location.search)
+const realistic = params.has('realism')
+setScaleMode(realistic ? 'realistic' : 'compressed')
 const records = defaultRecords()
 const stressCount = Number(params.get('bodies') ?? 0)
 if (Number.isFinite(stressCount) && stressCount > 0) {
@@ -75,6 +78,13 @@ const focus = createFocus({
 
 createPanel(document.getElementById('ui'), store, {
   onFocus: (id) => focus.focus(id),
+  realistic,
+  onScaleChange: (value) => {
+    setScaleMode(value ? 'realistic' : 'compressed')
+    system.dispose()
+    system = buildSystem(scene, store.getBodies())
+    tooltip.hide()
+  },
 })
 
 createHelp(document.getElementById('ui'))

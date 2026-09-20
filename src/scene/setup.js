@@ -16,7 +16,7 @@ export function createScene() {
     50,
     window.innerWidth / window.innerHeight,
     0.1,
-    2000,
+    5000,
   )
   camera.position.set(0, 100, 200)
 

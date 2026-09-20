@@ -1,4 +1,14 @@
-import { DISTANCE_SCALE, MOON_DISTANCE_SCALE, SIZE_SCALE } from '../config.js'
+import { SCALE_MODES } from '../config.js'
+
+let modeName = 'compressed'
+
+export function setScaleMode(name) {
+  modeName = name in SCALE_MODES ? name : 'compressed'
+}
+
+export function getScaleMode() {
+  return modeName
+}
 
 export function mapRange(value, inMin, inMax, outMin, outMax, pow = 1) {
   const t = Math.max((value - inMin) / (inMax - inMin), 0)
@@ -6,34 +16,16 @@ export function mapRange(value, inMin, inMax, outMin, outMax, pow = 1) {
 }
 
 export function auToScene(au) {
-  return mapRange(
-    au,
-    DISTANCE_SCALE.minAU,
-    DISTANCE_SCALE.maxAU,
-    DISTANCE_SCALE.outMin,
-    DISTANCE_SCALE.outMax,
-    DISTANCE_SCALE.pow,
-  )
+  const scale = SCALE_MODES[modeName].distance
+  return mapRange(au, scale.minAU, scale.maxAU, scale.outMin, scale.outMax, scale.pow)
 }
 
 export function kmToScene(km) {
-  return mapRange(
-    km,
-    SIZE_SCALE.minKm,
-    SIZE_SCALE.maxKm,
-    SIZE_SCALE.outMin,
-    SIZE_SCALE.outMax,
-    SIZE_SCALE.pow,
-  )
+  const scale = SCALE_MODES[modeName].size
+  return mapRange(km, scale.minKm, scale.maxKm, scale.outMin, scale.outMax, scale.pow)
 }
 
 export function moonDistanceToScene(km) {
-  return mapRange(
-    km,
-    MOON_DISTANCE_SCALE.minKm,
-    MOON_DISTANCE_SCALE.maxKm,
-    MOON_DISTANCE_SCALE.outMin,
-    MOON_DISTANCE_SCALE.outMax,
-    MOON_DISTANCE_SCALE.pow,
-  )
+  const scale = SCALE_MODES[modeName].moonDistance
+  return mapRange(km, scale.minKm, scale.maxKm, scale.outMin, scale.outMax, scale.pow)
 }

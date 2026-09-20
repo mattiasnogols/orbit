@@ -95,7 +95,7 @@ function createRow(record, { onFocus, onDelete, onAddMoon }) {
   return { row, name }
 }
 
-export function createPanel(container, store, { onFocus } = {}) {
+export function createPanel(container, store, { onFocus, onScaleChange, realistic = false } = {}) {
   const root = document.createElement('aside')
   root.className = 'panel'
 
@@ -138,6 +138,18 @@ export function createPanel(container, store, { onFocus } = {}) {
   restore.type = 'button'
   restore.textContent = 'Restore defaults'
   restore.addEventListener('click', () => store.reset())
+
+  const scaleLabel = document.createElement('label')
+  scaleLabel.className = 'panel-check'
+
+  const scaleInput = document.createElement('input')
+  scaleInput.type = 'checkbox'
+  scaleInput.checked = realistic
+  scaleInput.addEventListener('change', () => onScaleChange?.(scaleInput.checked))
+
+  const scaleText = document.createElement('span')
+  scaleText.textContent = 'Realistic scale'
+  scaleLabel.append(scaleInput, scaleText)
 
   const rowsById = new Map()
 
@@ -225,7 +237,7 @@ export function createPanel(container, store, { onFocus } = {}) {
 
   header.append(title, toggle)
   actions.append(add, restore)
-  body.append(list, form.element, actions)
+  body.append(list, form.element, scaleLabel, actions)
   root.append(header, body)
   container.append(root)
 
