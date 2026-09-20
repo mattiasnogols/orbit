@@ -97,5 +97,5 @@ export function createOrbitingBody(record, { parentRadius = () => 0 } = {}) {
 
   refresh()
 
-  return { anchor, tilt, mesh, ring, orbitLine, refresh, update }
+  return { anchor, mesh, orbitLine, refresh, update }
 }

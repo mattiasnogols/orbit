@@ -89,5 +89,5 @@ export function buildSystem(scene, records) {
 
   update(0)
 
-  return { sun, planets, moons, update, getPickables, getBody, refreshBody, dispose }
+  return { planets, moons, update, getPickables, getBody, refreshBody, dispose }
 }

@@ -10,7 +10,7 @@ describe('orbitPosition', () => {
       simDays: 0,
     })
     expect(x).toBeCloseTo(0, 10)
-    expect(z).toBeCloseTo(10, 10)
+    expect(z).toBeCloseTo(-10, 10)
   })
 
   it('moves a quarter turn after a quarter of the period', () => {
@@ -21,7 +21,7 @@ describe('orbitPosition', () => {
       simDays: 25,
     })
     expect(x).toBeCloseTo(0, 10)
-    expect(z).toBeCloseTo(10, 10)
+    expect(z).toBeCloseTo(-10, 10)
   })
 
   it('returns to the start after a full period', () => {

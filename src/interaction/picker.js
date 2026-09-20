@@ -116,9 +116,5 @@ export function createPicker({ camera, domElement, getPickables, onHover, onSele
     setHovered(pick())
   }
 
-  return {
-    update,
-    getHovered: () => hovered,
-    getSelected: () => selected,
-  }
+  return { update }
 }

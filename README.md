@@ -10,14 +10,14 @@ A 3D, interactive model of the solar system.
 - **three** - scene, geometries, materials, lighting
 - `three/addons/controls/OrbitControls.js` - orbit, zoom
 - **Vite** - zero-config, ESM, fast HMR, simple production build
-- **JavaScript (ESM)** with JSDoc types - plain DOM; easy to read
+- **JavaScript (ESM)** - plain DOM; easy to read
 - **Custom DOM** - kid-friendly panels and sliders
-- **Vitest** - unit tests (scaling, orbit, time, store)
+- **Vitest** - unit tests (scaling, orbit, time, store, scene sync, focus)
 - `stats.js` - FPS check during the performance pass
 
 ## Requirements
 
-- Node 18+
+- Node 22.12+ (Vitest 5 requirement); Vite itself also runs on Node 18+
 
 ## Getting started
 
@@ -42,8 +42,9 @@ Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0
 ## Scaling & orbit rules
 
 - Compress distances more than sizes so planets are not crowded near the Sun.
-- "Realistic scale" toggle: linear mappings and a much larger scene for true relative ratios.
-- Default: circular orbits, planets on the XZ plane, counter-clockwise.
+- "Realistic scale" toggle: linear mappings and a much larger scene; sizes and distances keep true
+  relative ratios within their own mapping (the Sun keeps its fixed radius).
+- Default: circular orbits, planets on the XZ plane, counter-clockwise when viewed from +Y.
 - Angular speed derives directly from the editable period, so changing "year length"
   changes motion immediately.
 
