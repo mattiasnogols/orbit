@@ -10,7 +10,7 @@ A 3D, interactive model of the solar system.
 
 ## Screenshots
 
-| Default view | Realistic scale |
+| Default view | Editor view |
 | --- | --- |
 | ![Default compressed view](docs/screenshots/overview.png) | ![Editor view](docs/screenshots/editor.png) |
 
