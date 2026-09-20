@@ -98,7 +98,7 @@ export function createBodyForm(store) {
     }
   })
 
-  color.addEventListener('input', () => commit({ color: color.value }))
+  color.addEventListener('input', () => commit({ color: color.value, texture: null }))
 
   size.slider.addEventListener('input', () => {
     const diameter = Math.round(fromSlider(Number(size.slider.value), SIZE) / 10) * 10

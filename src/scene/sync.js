@@ -59,6 +59,9 @@ export function buildSystem(scene, records) {
   }
 
   function update(simDays) {
+    if (sunRecord.rotationHours) {
+      sun.rotation.y = (2 * Math.PI * simDays) / (sunRecord.rotationHours / 24)
+    }
     for (const planet of planets) planet.update(simDays)
     for (const moon of moons) moon.update(simDays)
   }

@@ -2,8 +2,8 @@
 
 A 3D, interactive model of the solar system.
 
-> **Status:** core, time controls, hover info, focus, CRUD are implemented. 
-> Textures and unit tests are still pending.
+> **Status:** core, time controls, hover info, focus, CRUD & textures are implemented. 
+> Unit tests and the performance pass are still pending.
 
 ## Tech stack
 
@@ -36,8 +36,8 @@ npm install -D vitest
 
 ## Textures
 
-Texture assets placed in `public/textures/`:
-Add `public/textures/CREDITS.md` with source URLs and licences.
+Planet, Sun, Moon and Saturn-ring maps live in `public/textures/`.
+Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0).
 
 ## Scaling & orbit rules
 
