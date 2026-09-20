@@ -1,23 +1,32 @@
 # Orbit
 
-A 3D, interactive model of the solar system.
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Mattias_N%C3%B5gols-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/mattias-nõgols)
+[![GitHub](https://img.shields.io/badge/GitHub-mattiasnogols-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mattiasnogols)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
+A 3D, interactive model of the solar system.
 > **Status:** core, time controls, hover info, focus, CRUD & textures are implemented.
-> The performance pass is in progress (shared geometry, throttled picking and UI updates).
+
+
+## Screenshots
+
+| Default view | Realistic scale |
+| --- | --- |
+| ![Default compressed view](docs/screenshots/overview.png) | ![Editor view](docs/screenshots/editor.png) |
 
 ## Tech stack
 
-- **three** - scene, geometries, materials, lighting
-- `three/addons/controls/OrbitControls.js` - orbit, zoom
-- **Vite** - zero-config, ESM, fast HMR, simple production build
 - **JavaScript (ESM)** - plain DOM; easy to read
 - **Custom DOM** - kid-friendly panels and sliders
+- **three** - scene, geometries, materials, lighting
+- **Vite** - zero-config, ESM, simple production build
 - **Vitest** - unit tests (scaling, orbit, time, store, scene sync, focus)
 - `stats.js` - FPS check during the performance pass
+- `three/addons/controls/OrbitControls.js` - orbit, zoom
 
 ## Requirements
 
-- Node 22.12+ (Vitest 5 requirement); Vite itself also runs on Node 18+
+- Node 22.12+
 
 ## Getting started
 
@@ -36,7 +45,6 @@ npm install -D vitest
 
 ## Textures
 
-Planet, Sun, Moon and Saturn-ring maps live in `public/textures/`.
 Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0).
 
 ## Scaling & orbit rules
@@ -63,8 +71,6 @@ Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0
 
 60 fps with the 8 planets + default moons.
 
-## Feature flags
+## License
 
-- `?stats` - show the `stats.js` FPS panel
-- `?bodies=N` - add N stress planets with moons for performance testing
-- `?realism` - start with the realistic scale toggle enabled
+Released under the [MIT License](LICENSE).
