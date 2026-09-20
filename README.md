@@ -3,7 +3,7 @@
 A 3D, interactive model of the solar system.
 
 > **Status:** core, time controls, hover info, focus, CRUD & textures are implemented. 
-> Unit tests and the performance pass are still pending.
+> The performance pass is still pending.
 
 ## Tech stack
 
@@ -12,7 +12,7 @@ A 3D, interactive model of the solar system.
 - **Vite** - zero-config, ESM, fast HMR, simple production build
 - **JavaScript (ESM)** with JSDoc types - plain DOM; easy to read
 - **Custom DOM** - kid-friendly panels and sliders
-- **Vitest** - scaling, orbital math
+- **Vitest** - unit tests (scaling, orbit, time, store)
 - `stats.js` - FPS check during the performance pass
 
 ## Requirements
