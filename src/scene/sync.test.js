@@ -68,6 +68,21 @@ describe('buildSystem', () => {
     expect(io.orbitLine.scale.x).toBeCloseTo(kmToScene(35000) + moonDistanceToScene(421700), 10)
   })
 
+  it('spins Venus and Uranus retrograde relative to the orbit normal', () => {
+    const { system } = setup()
+    const spinDirection = (id) => {
+      const planet = system.planets.find((item) => item.mesh.userData.record.id === id)
+      const axis = new THREE.Vector3(0, 1, 0).applyQuaternion(
+        planet.mesh.getWorldQuaternion(new THREE.Quaternion()),
+      )
+      return Math.sign(planet.mesh.userData.record.rotationHours) * axis.y
+    }
+
+    expect(spinDirection('earth')).toBeGreaterThan(0)
+    expect(spinDirection('venus')).toBeLessThan(0)
+    expect(spinDirection('uranus')).toBeLessThan(0)
+  })
+
   it('removes every object from the scene on dispose', () => {
     const { scene, system } = setup()
     expect(scene.children.length).toBeGreaterThan(0)

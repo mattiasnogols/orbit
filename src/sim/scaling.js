@@ -3,7 +3,7 @@ import { SCALE_MODES } from '../config.js'
 let modeName = 'compressed'
 
 export function setScaleMode(name) {
-  modeName = name in SCALE_MODES ? name : 'compressed'
+  modeName = Object.hasOwn(SCALE_MODES, name) ? name : 'compressed'
 }
 
 export function getScaleMode() {

@@ -2,7 +2,7 @@ const SLIDER_STEPS = 1000
 const SIZE = { min: 500, max: 150000, step: 10, unit: 'km', log: true }
 const PLANET_DISTANCE = { min: 0.2, max: 35, step: 0.001, unit: 'AU', log: true }
 const MOON_DISTANCE = { min: 10000, max: 2000000, step: 100, unit: 'km', log: true }
-const PERIOD = { min: 10, max: 100000, step: 1, unit: 'days', log: true }
+const PERIOD = { min: 1, max: 100000, step: 0.01, unit: 'days', log: true }
 
 function distanceConfig(record) {
   return record.type === 'moon' ? MOON_DISTANCE : PLANET_DISTANCE

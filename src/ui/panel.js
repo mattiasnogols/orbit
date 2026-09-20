@@ -3,6 +3,10 @@ import { createBodyForm } from './bodyForm.js'
 const YEAR_DAYS = 365.26
 const NEW_PLANET_DISTANCE_AU = 2.2
 
+function sortKey(record) {
+  return record.type === 'moon' ? record.distanceKm : record.distanceAU
+}
+
 function nextPlanetIndex(bodies) {
   let index = 1
   while (bodies.some((body) => body.id === `planet-${index}`)) index += 1
@@ -152,9 +156,11 @@ export function createPanel(container, store, { onFocus, onScaleChange, realisti
   scaleLabel.append(scaleInput, scaleText)
 
   const rowsById = new Map()
+  const sortKeysById = new Map()
 
   function renderList() {
     rowsById.clear()
+    sortKeysById.clear()
     const records = store.getBodies()
     const planets = records
       .filter((record) => record.type === 'planet')
@@ -191,6 +197,7 @@ export function createPanel(container, store, { onFocus, onScaleChange, realisti
           store.select(entry.record.id)
         })
         rowsById.set(entry.record.id, { row, name })
+        sortKeysById.set(entry.record.id, sortKey(entry.record))
         rows.push(row)
       }
     }
@@ -222,8 +229,14 @@ export function createPanel(container, store, { onFocus, onScaleChange, realisti
     }
 
     if (kind === 'update') {
-      const entry = rowsById.get(id)
       const record = store.get(id)
+      if (record && sortKeysById.get(id) !== sortKey(record)) {
+        renderList()
+        applySelection()
+        return
+      }
+
+      const entry = rowsById.get(id)
       if (entry && record) {
         entry.name.textContent = record.name
         entry.name.title = record.name

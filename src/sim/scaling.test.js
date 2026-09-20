@@ -131,4 +131,10 @@ describe('scale modes', () => {
     setScaleMode('unknown')
     expect(getScaleMode()).toBe('compressed')
   })
+
+  it('falls back to compressed for inherited property names', () => {
+    setScaleMode('toString')
+    expect(getScaleMode()).toBe('compressed')
+    expect(auToScene(1)).toBeGreaterThan(0)
+  })
 })
