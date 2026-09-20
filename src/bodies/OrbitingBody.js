@@ -3,6 +3,7 @@ import { auToScene, kmToScene, moonDistanceToScene } from '../sim/scaling.js'
 import { orbitPosition } from '../sim/orbit.js'
 import { loadTexture } from '../scene/textures.js'
 import { createOrbitLine } from './orbitLine.js'
+import { SPHERE_GEOMETRY } from './geometry.js'
 
 const RING_INNER = 1.3
 const RING_OUTER = 2.3
@@ -40,7 +41,7 @@ export function createOrbitingBody(record, { parentRadius = () => 0 } = {}) {
   anchor.add(tilt)
 
   const material = new THREE.MeshStandardMaterial({ color: record.color, roughness: 0.9 })
-  const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), material)
+  const mesh = new THREE.Mesh(SPHERE_GEOMETRY, material)
   mesh.userData.record = record
   tilt.add(mesh)
 
@@ -95,7 +96,16 @@ export function createOrbitingBody(record, { parentRadius = () => 0 } = {}) {
     }
   }
 
+  function dispose() {
+    material.dispose()
+    orbitLine.material.dispose()
+    if (ring) {
+      ring.geometry.dispose()
+      ring.material.dispose()
+    }
+  }
+
   refresh()
 
-  return { anchor, mesh, orbitLine, refresh, update }
+  return { anchor, mesh, orbitLine, refresh, update, dispose }
 }

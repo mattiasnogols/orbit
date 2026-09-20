@@ -2,8 +2,8 @@
 
 A 3D, interactive model of the solar system.
 
-> **Status:** core, time controls, hover info, focus, CRUD & textures are implemented. 
-> The performance pass is still pending.
+> **Status:** core, time controls, hover info, focus, CRUD & textures are implemented.
+> The performance pass is in progress (shared geometry, throttled picking and UI updates).
 
 ## Tech stack
 

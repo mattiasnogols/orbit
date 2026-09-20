@@ -6,6 +6,7 @@ const HOVER_LINE_OPACITY = 0.9
 const HOVER_EMISSIVE = 0x444444
 const HOVER_BASIC_COLOR = 0xffffff
 const CLICK_TOLERANCE = 5
+const PICK_INTERVAL_MS = 100
 
 function sameEntry(a, b) {
   if (!a && !b) return true
@@ -22,6 +23,8 @@ export function createPicker({ camera, domElement, getPickables, onHover, onSele
   let pressed = false
   let pressX = 0
   let pressY = 0
+  let pointerDirty = false
+  let lastPickTime = -Infinity
 
   function setHighlight(entry, on) {
     if (!entry) return
@@ -68,6 +71,7 @@ export function createPicker({ camera, domElement, getPickables, onHover, onSele
 
   function onPointerEnter(event) {
     pointerInside = true
+    pointerDirty = true
     updatePointer(event)
   }
 
@@ -79,6 +83,7 @@ export function createPicker({ camera, domElement, getPickables, onHover, onSele
   function onPointerMove(event) {
     updatePointer(event)
     pointerInside = true
+    pointerDirty = true
   }
 
   function onPointerDown(event) {
@@ -113,6 +118,10 @@ export function createPicker({ camera, domElement, getPickables, onHover, onSele
 
   function update() {
     if (!pointerInside) return
+    const now = performance.now()
+    if (!pointerDirty && now - lastPickTime < PICK_INTERVAL_MS) return
+    pointerDirty = false
+    lastPickTime = now
     setHovered(pick())
   }
 

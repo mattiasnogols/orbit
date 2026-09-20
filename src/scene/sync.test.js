@@ -68,6 +68,21 @@ describe('buildSystem', () => {
     expect(io.orbitLine.scale.x).toBeCloseTo(kmToScene(35000) + moonDistanceToScene(421700), 10)
   })
 
+  it('shares geometry between bodies and keeps it alive on dispose', () => {
+    const { system } = setup()
+    const geometry = system.planets[0].mesh.geometry
+    expect(system.planets[1].mesh.geometry).toBe(geometry)
+    expect(system.getBody('sun').anchor.geometry).toBe(geometry)
+    expect(system.planets[1].orbitLine.geometry).toBe(system.planets[0].orbitLine.geometry)
+
+    let disposed = false
+    geometry.addEventListener('dispose', () => {
+      disposed = true
+    })
+    system.dispose()
+    expect(disposed).toBe(false)
+  })
+
   it('spins Venus and Uranus retrograde relative to the orbit normal', () => {
     const { system } = setup()
     const spinDirection = (id) => {

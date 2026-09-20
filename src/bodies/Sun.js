@@ -1,10 +1,12 @@
 import * as THREE from 'three'
 import { SUN_RADIUS } from '../config.js'
 import { loadTexture } from '../scene/textures.js'
+import { SPHERE_GEOMETRY } from './geometry.js'
 
 export function createSun(record) {
   const material = new THREE.MeshBasicMaterial({ color: record.color })
-  const mesh = new THREE.Mesh(new THREE.SphereGeometry(SUN_RADIUS, 48, 32), material)
+  const mesh = new THREE.Mesh(SPHERE_GEOMETRY, material)
+  mesh.scale.setScalar(SUN_RADIUS)
   mesh.userData.record = record
 
   if (record.texture) {

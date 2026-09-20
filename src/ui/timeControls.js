@@ -2,6 +2,7 @@ import { DAYS_PER_SECOND } from '../config.js'
 
 const MIN_SPEED = 0.1
 const MAX_SPEED = 10000
+const READOUT_INTERVAL_MS = 100
 
 function clampSpeed(speed) {
   return Math.min(Math.max(speed, MIN_SPEED), MAX_SPEED)
@@ -46,6 +47,8 @@ export function createTimeControls(container, simTime) {
   const readout = document.createElement('span')
   readout.className = 'time-readout'
 
+  let lastReadoutTime = -Infinity
+
   playPause.addEventListener('click', () => {
     simTime.setPaused(!simTime.isPaused())
     sync()
@@ -83,11 +86,17 @@ export function createTimeControls(container, simTime) {
   function updateReadout() {
     const speed = simTime.getSpeed()
     const rate = simTime.isPaused() ? 0 : DAYS_PER_SECOND * speed
-    readout.textContent = `${formatSpeed(speed)}× · ${rate.toFixed(2)} days/s · ${formatElapsed(simTime.getDays())}`
+    const text = `${formatSpeed(speed)}× · ${rate.toFixed(2)} days/s · ${formatElapsed(simTime.getDays())}`
+    if (readout.textContent !== text) readout.textContent = text
+  }
+
+  function syncPlayPause() {
+    const label = simTime.isPaused() ? 'Play' : 'Pause'
+    if (playPause.textContent !== label) playPause.textContent = label
   }
 
   function sync() {
-    playPause.textContent = simTime.isPaused() ? 'Play' : 'Pause'
+    syncPlayPause()
     if (document.activeElement !== speedInput) {
       speedInput.value = formatSpeed(simTime.getSpeed())
     }
@@ -95,11 +104,14 @@ export function createTimeControls(container, simTime) {
   }
 
   function update() {
-    playPause.textContent = simTime.isPaused() ? 'Play' : 'Pause'
+    syncPlayPause()
     if (document.activeElement !== speedInput) {
       const display = formatSpeed(simTime.getSpeed())
       if (speedInput.value !== display) speedInput.value = display
     }
+    const now = performance.now()
+    if (now - lastReadoutTime < READOUT_INTERVAL_MS) return
+    lastReadoutTime = now
     updateReadout()
   }
 

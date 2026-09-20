@@ -77,14 +77,13 @@ export function buildSystem(scene, records) {
   }
 
   function dispose() {
-    const objects = [sun, ...planets.flatMap((planet) => [planet.anchor, planet.orbitLine])]
-    for (const object of objects) {
-      scene.remove(object)
-      object.traverse((child) => {
-        if (child.geometry) child.geometry.dispose()
-        if (child.material) child.material.dispose()
-      })
+    scene.remove(sun)
+    sun.material.dispose()
+    for (const planet of planets) {
+      scene.remove(planet.anchor)
+      scene.remove(planet.orbitLine)
     }
+    for (const body of [...planets, ...moons]) body.dispose()
   }
 
   update(0)
