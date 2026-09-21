@@ -1,17 +1,19 @@
 # Orbit
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Mattias_N%C3%B5gols-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/mattias-nõgols)
-[![GitHub](https://img.shields.io/badge/GitHub-mattiasnogols-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mattiasnogols)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
+A 3D, interactive model of the solar system built with Three.js.
 
-A 3D, interactive model of the solar system.
-> **Status:** core, time controls, hover info, focus, CRUD & textures are implemented.
 
+[![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=threedotjs&logoColor=white)](https://threejs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-22.12%2B-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
+[![CSS](https://img.shields.io/badge/CSS-663399?style=for-the-badge&logo=css&logoColor=white)](https://developer.mozilla.org/docs/Web/CSS)
+
+**Status:** core, time controls, hover info, focus, CRUD and textures implemented
 
 ## Screenshots
 
 | Default view | Editor view |
-| --- | --- |
+| :---: | :---: |
 | ![Default compressed view](docs/screenshots/overview.png) | ![Editor view](docs/screenshots/editor.png) |
 
 ## Tech stack
@@ -21,8 +23,6 @@ A 3D, interactive model of the solar system.
 - **three** - scene, geometries, materials, lighting
 - **Vite** - zero-config, ESM, simple production build
 - **Vitest** - unit tests (scaling, orbit, time, store, scene sync, focus)
-- `stats.js` - FPS check during the performance pass
-- `three/addons/controls/OrbitControls.js` - orbit, zoom
 
 ## Requirements
 
@@ -45,7 +45,7 @@ npm install -D vitest
 
 ## Textures
 
-Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0).
+Sources: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0).
 
 ## Scaling & orbit rules
 
@@ -74,3 +74,7 @@ Sources and licence: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0
 ## License
 
 Released under the [MIT License](LICENSE).
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Mattias_N%C3%B5gols-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/mattias-n%C3%B5gols)
+[![GitHub](https://img.shields.io/badge/GitHub-mattiasnogols-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mattiasnogols)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
