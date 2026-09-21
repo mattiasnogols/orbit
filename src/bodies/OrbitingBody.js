@@ -6,7 +6,7 @@ import { createOrbitLine } from './orbitLine.js'
 import { SPHERE_GEOMETRY } from './geometry.js'
 
 const RING_INNER = 1.3
-const RING_OUTER = 2.3
+export const RING_OUTER = 2.3
 
 function createRing(record) {
   const geometry = new THREE.RingGeometry(RING_INNER, RING_OUTER, 128, 1)

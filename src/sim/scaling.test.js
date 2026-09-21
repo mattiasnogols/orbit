@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { auToScene, getScaleMode, kmToScene, mapRange, moonDistanceToScene, setScaleMode } from './scaling.js'
 import { SCALE_MODES } from '../config.js'
+import { RING_OUTER } from '../bodies/OrbitingBody.js'
 
 const COMPRESSED = SCALE_MODES.compressed
 
@@ -120,10 +121,15 @@ describe('scale modes', () => {
     expect(auToScene(0.387)).toBeGreaterThan(5)
   })
 
-  it('keeps moon orbits outside their planet in realistic mode', () => {
+  it('keeps moon distances proportional to planet sizes in realistic mode', () => {
     setScaleMode('realistic')
-    const earthRadius = kmToScene(6371)
-    expect(earthRadius + moonDistanceToScene(384400)).toBeGreaterThan(earthRadius)
+    expect(moonDistanceToScene(384400) / kmToScene(6371)).toBeCloseTo(384400 / 6371, 6)
+    expect(moonDistanceToScene(1221870) / kmToScene(58232)).toBeCloseTo(1221870 / 58232, 6)
+  })
+
+  it('keeps Titan outside the rings in realistic mode', () => {
+    setScaleMode('realistic')
+    expect(moonDistanceToScene(1221870)).toBeGreaterThan(RING_OUTER * kmToScene(58232))
   })
 
   it('falls back to compressed for unknown mode names', () => {
