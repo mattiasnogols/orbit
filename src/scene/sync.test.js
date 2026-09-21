@@ -1,8 +1,11 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import * as THREE from 'three'
 import { createStore } from '../state/store.js'
 import { auToScene, kmToScene, moonDistanceToScene } from '../sim/scaling.js'
 import { buildSystem } from './sync.js'
+import { loadTexture } from './textures.js'
+
+vi.mock('./textures.js', () => ({ loadTexture: vi.fn() }))
 
 function setup() {
   const store = createStore()
@@ -66,6 +69,35 @@ describe('buildSystem', () => {
     expect(jupiter.mesh.material.color.getHexString()).toBe('ff0000')
     expect(jupiter.orbitLine.scale.x).toBeCloseTo(auToScene(6), 10)
     expect(io.orbitLine.scale.x).toBeCloseTo(kmToScene(35000) + moonDistanceToScene(421700), 10)
+  })
+
+  it('re-applies a restored texture on refreshBody', () => {
+    const { store, system } = setup()
+    const earth = system.planets.find((planet) => planet.mesh.userData.record.id === 'earth')
+
+    store.update('earth', { color: '#ff0000', texture: null })
+    system.refreshBody('earth')
+    expect(earth.mesh.material.map).toBe(null)
+
+    loadTexture.mockClear()
+    store.update('earth', { texture: 'earth.jpg' })
+    system.refreshBody('earth')
+    expect(loadTexture).toHaveBeenCalledWith('earth.jpg', expect.any(Function))
+  })
+
+  it('ignores a texture that loads after the texture was removed', () => {
+    const { store, system } = setup()
+    const earth = system.planets.find((planet) => planet.mesh.userData.record.id === 'earth')
+
+    loadTexture.mockClear()
+    system.refreshBody('earth')
+    const onLoad = loadTexture.mock.calls.findLast(([file]) => file === 'earth.jpg')[1]
+
+    store.update('earth', { color: '#ff0000', texture: null })
+    system.refreshBody('earth')
+    onLoad({ isTexture: true })
+
+    expect(earth.mesh.material.map).toBe(null)
   })
 
   it('shares geometry between bodies and keeps it alive on dispose', () => {

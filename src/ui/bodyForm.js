@@ -93,6 +93,12 @@ export function createBodyForm(store) {
   colorLabel.textContent = 'Colour'
   colorField.append(colorLabel, color)
 
+  const restoreTexture = document.createElement('button')
+  restoreTexture.type = 'button'
+  restoreTexture.className = 'texture-restore'
+  restoreTexture.textContent = 'Use texture'
+  restoreTexture.hidden = true
+
   const row = document.createElement('div')
   row.className = 'field-row'
   row.append(nameField, colorField)
@@ -101,9 +107,16 @@ export function createBodyForm(store) {
   const distance = createSliderField('Distance from Sun', PLANET_DISTANCE)
   const period = createSliderField('Year length', PERIOD)
 
+  const texturesById = new Map()
+
   function currentRecord() {
     const id = store.getSelection()
     return id ? store.get(id) : null
+  }
+
+  function updateRestore() {
+    const record = currentRecord()
+    restoreTexture.hidden = !(record && record.texture == null && texturesById.has(record.id))
   }
 
   function commit(changes) {
@@ -141,7 +154,19 @@ export function createBodyForm(store) {
     }
   })
 
-  color.addEventListener('input', () => commit({ color: color.value, texture: null }))
+  color.addEventListener('input', () => {
+    const record = currentRecord()
+    if (record?.texture) texturesById.set(record.id, record.texture)
+    commit({ color: color.value, texture: null })
+    updateRestore()
+  })
+
+  restoreTexture.addEventListener('click', () => {
+    const record = currentRecord()
+    const texture = record ? texturesById.get(record.id) : null
+    if (texture) commit({ texture })
+    updateRestore()
+  })
 
   bind(size, (diameter) => commit({ radiusKm: diameter / 2 }))
   bind(distance, (value) => {
@@ -151,7 +176,7 @@ export function createBodyForm(store) {
   })
   bind(period, (days) => commit({ periodDays: days }))
 
-  element.append(heading, row, size.wrapper, distance.wrapper, period.wrapper)
+  element.append(heading, row, restoreTexture, size.wrapper, distance.wrapper, period.wrapper)
 
   function setField(field, value) {
     if (document.activeElement !== field.slider) {
@@ -174,10 +199,12 @@ export function createBodyForm(store) {
 
     if (document.activeElement !== name) name.value = record.name
     if (document.activeElement !== color) color.value = record.color
+    if (record.texture) texturesById.set(record.id, record.texture)
 
     setField(size, record.radiusKm * 2)
     setField(distance, isMoon ? record.distanceKm : record.distanceAU)
     setField(period, record.periodDays)
+    updateRestore()
   }
 
   function hide() {

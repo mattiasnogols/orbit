@@ -328,6 +328,11 @@ input[type="range"] {
   width: 64px;
 }
 
+.texture-restore {
+  width: 100%;
+  font-size: 12px;
+}
+
 .panel-actions {
   display: flex;
   flex-shrink: 0;

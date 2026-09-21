@@ -45,13 +45,16 @@ export function createOrbitingBody(record, { parentRadius = () => 0 } = {}) {
   mesh.userData.record = record
   tilt.add(mesh)
 
-  if (record.texture) {
-    loadTexture(record.texture, (texture) => {
+  function applyTexture(file) {
+    loadTexture(file, (texture) => {
+      if (record.texture !== file) return
       material.map = texture
       material.color.set(0xffffff)
       material.needsUpdate = true
     })
   }
+
+  if (record.texture) applyTexture(record.texture)
 
   const ring = record.ringTexture ? createRing(record) : null
   if (ring) tilt.add(ring)
@@ -73,6 +76,8 @@ export function createOrbitingBody(record, { parentRadius = () => 0 } = {}) {
     if (!record.texture && material.map) {
       material.map = null
       material.needsUpdate = true
+    } else if (record.texture && !material.map) {
+      applyTexture(record.texture)
     }
     material.color.set(material.map ? 0xffffff : record.color)
 
