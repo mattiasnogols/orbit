@@ -4,7 +4,6 @@ A 3D, interactive model of the solar system built with Three.js.
 
 **Live:** [mattiasnogols.github.io/orbit](https://mattiasnogols.github.io/orbit/)
 
-[![Deploy](https://img.shields.io/github/actions/workflow/status/mattiasnogols/orbit/deploy.yml?style=for-the-badge&label=deploy)](https://github.com/mattiasnogols/orbit/actions/workflows/deploy.yml)
 [![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=threedotjs&logoColor=white)](https://threejs.org)
 [![Node.js](https://img.shields.io/badge/Node.js-22.12%2B-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
