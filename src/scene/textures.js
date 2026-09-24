@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-const BASE_PATH = '/textures/'
+const BASE_PATH = `${import.meta.env.BASE_URL}textures/`
 const entries = new Map()
 
 export function loadTexture(file, onLoad) {
