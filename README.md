@@ -68,10 +68,6 @@ Sources: `public/textures/CREDITS.md` (Solar System Scope, CC BY 4.0).
 - Centred top time bar: Play/Pause, speed down/up buttons.
 - Right-hand panel: tree of planets with moons; CRUD; "Realistic scale" toggle.
 
-## Performance target
-
-60 fps with the 8 planets + default moons.
-
 ## License
 
 Released under the [MIT License](LICENSE).
